@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Matrix Code Challenge</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      background: black;
+      color: white;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+
+    h1 {
+      text-align: center;
+      font-weight: bold;
+      font-size: 1.5rem;
+      margin: 15px;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+      padding-top: 60px;
+    }
+
+    .code-display {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .digit-box {
+      width: 50px;
+      height: 50px;
+      border: 2px solid white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      background: rgba(0,0,0,0.6);
+    }
+
+    .numpad {
+      display: grid;
+      grid-template-columns: repeat(3, 70px);
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .numpad button {
+      width: 70px;
+      height: 70px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.1);
+      color: white;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .numpad button:active {
+      background: limegreen;
+      color: black;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    #retry {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      cursor: pointer;
+      display: none;
+    }
+
+    #retry:active {
+      background: red;
+      color: white;
+    }
+
+    @media (max-width: 480px) {
+      h1 { font-size: 1.2rem; }
+      .digit-box { width: 40px; height: 40px; font-size: 1.2rem; }
+      .numpad { grid-template-columns: repeat(3, 60px); gap: 8px; }
+      .numpad button { width: 60px; height: 60px; font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="matrix"></canvas>
+
+  <h1>Enlighten. Lead. Change.</h1>
+
+  <div class="container">
+    <div class="code-display">
+      <div class="digit-box" id="d1"></div>
+      <div class="digit-box" id="d2"></div>
+      <div class="digit-box" id="d3"></div>
+    </div>
+
+    <div class="numpad">
+      <button onclick="enterDigit(1)">1</button>
+      <button onclick="enterDigit(2)">2</button>
+      <button onclick="enterDigit(3)">3</button>
+      <button onclick="enterDigit(4)">4</button>
+      <button onclick="enterDigit(5)">5</button>
+      <button onclick="enterDigit(6)">6</button>
+      <button onclick="enterDigit(7)">7</button>
+      <button onclick="enterDigit(8)">8</button>
+      <button onclick="enterDigit(9)">9</button>
+      <button onclick="clearCode()">C</button>
+      <button onclick="enterDigit(0)">0</button>
+      <button onclick="validateCode()">OK</button>
+    </div>
+
+    <div id="result"></div>
+    <button id="retry" onclick="retry()">Retry</button>
+  </div>
+
+  <script>
+    // Effet Matrix
+    const canvas = document.getElementById("matrix");
+    const ctx = canvas.getContext("2d");
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+
+    const numbers = "0123456789";
+    const font_size = 14;
+    const columns = canvas.width / font_size;
+    const drops = Array(Math.floor(columns)).fill(1);
+
+    function draw() {
+      ctx.fillStyle = "rgba(0,0,0,0.05)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#0F0";
+      ctx.font = font_size + "px monospace";
+
+      for (let i = 0; i < drops.length; i++) {
+        const text = numbers.charAt(Math.floor(Math.random() * numbers.length));
+        ctx.fillText(text, i * font_size, drops[i] * font_size);
+        if (drops[i] * font_size > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    }
+    setInterval(draw, 33);
+
+    // Gestion du code
+    let code = [];
+    function enterDigit(digit) {
+      if (code.length < 3) {
+        code.push(digit);
+        document.getElementById("d" + code.length).innerText = digit;
+      }
+    }
+
+    function clearCode() {
+      code = [];
+      document.getElementById("d1").innerText = "";
+      document.getElementById("d2").innerText = "";
+      document.getElementById("d3").innerText = "";
+      document.getElementById("result").innerText = "";
+      document.getElementById("retry").style.display = "none";
+    }
+
+    function validateCode() {
+      const result = document.getElementById("result");
+      if (code.join("") === "980") {
+        result.style.color = "limegreen";
+        result.innerText = "GOOD ANSWER";
+      } else {
+        result.style.color = "red";
+        result.innerText = "WRONG";
+      }
+      document.getElementById("retry").style.display = "block";
+    }
+
+    function retry() {
+      clearCode();
+    }
+  </script>
+</body>
+</html>
